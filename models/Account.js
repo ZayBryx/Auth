@@ -42,9 +42,9 @@ accountSchema.methods.checkPassword = async function (inputPassword) {
 
 accountSchema.methods.generateAccessToken = async function () {
   return jwt.sign(
-    { userId: this._id, role: this.role },
+    { userId: this._id, name: this.name, role: this.role },
     process.env.ACCESS_SECRET,
-    { expiresIn: "30sec" }
+    { expiresIn: "3min" }
   );
 };
 
