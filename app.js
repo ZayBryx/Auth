@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const path = require("path");
 const app = express();
 
 const port = process.env.PORT || 2024;
@@ -25,8 +26,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  console.log(req.cookies);
-  res.send("<h1>TEST</h1>");
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.use("/api/auth", require("./routes/authRoutes"));
