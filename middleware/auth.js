@@ -1,10 +1,20 @@
 const jwt = require("jsonwebtoken");
-const { UnathenticatedError, BadRequestError } = require("../Errors");
-
-let tokenBlacklist = [];
+const {
+  UnathenticatedError,
+  BadRequestError,
+  NotFoundError,
+} = require("../Errors");
+const Token = require("../models/Token");
 
 const authMiddleware = async (req, res, next) => {
   const accessToken = req.headers.authorization;
+  const refreshToken = req.cookies["jwt"];
+
+  if (!refreshToken) throw new NotFoundError("Token not Found");
+
+  const refresh = await Token.findOne({ refreshToken });
+
+  if (!refresh.isValid) throw new UnathenticatedError("Invalid Token");
 
   if (!accessToken || !accessToken.startsWith("Bearer ")) {
     throw new UnathenticatedError("Invalid Token");
@@ -15,7 +25,11 @@ const authMiddleware = async (req, res, next) => {
   try {
     const payload = jwt.verify(token, process.env.ACCESS_SECRET);
 
-    req.user = { userId: payload.userId, role: payload.role };
+    req.user = {
+      userId: payload.userId,
+      name: payload.name,
+      role: payload.role,
+    };
 
     next();
   } catch (error) {

@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/account", require("./routes/accountRoute"));
+app.use("/api/account", authMiddleware, require("./routes/accountRoute"));
 
 app.use(customErrorMiddleware);
 app.use(notFoundMiddleware);
