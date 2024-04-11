@@ -7,6 +7,7 @@ const {
   NotFoundError,
   UnathenticatedError,
 } = require("../Errors");
+const Token = require("../models/Token");
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -30,6 +31,7 @@ const login = async (req, res) => {
   const accessToken = await account.generateAccessToken();
   const refreshToken = await account.generateRefreshToken();
 
+  await Token.create({ refreshToken, userId: account._id });
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
     secure: "production",
