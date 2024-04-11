@@ -30,9 +30,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", require("./routes/authRoutes"));
-app.get("/api/account", authMiddleware, (req, res) => {
-  res.send(req.user);
-});
+app.use("/api/account", require("./routes/accountRoute"));
 
 app.use(customErrorMiddleware);
 app.use(notFoundMiddleware);
