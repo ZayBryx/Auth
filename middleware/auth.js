@@ -3,6 +3,7 @@ const {
   UnathenticatedError,
   BadRequestError,
   NotFoundError,
+  UnathoizedError,
 } = require("../Errors");
 const Token = require("../models/Token");
 
@@ -40,4 +41,13 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+const authorizePermissions = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      throw new UnathoizedError("Unauthorized access to this route");
+    }
+    next();
+  };
+};
+
+module.exports = { authMiddleware, authorizePermissions };
