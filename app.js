@@ -13,7 +13,6 @@ const db = process.env.DB_URI;
 
 const customErrorMiddleware = require("./middleware/error-handler");
 const notFoundMiddleware = require("./middleware/not-found");
-const authMiddleware = require("./middleware/auth");
 
 app.use(
   cors({
@@ -30,7 +29,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/account", authMiddleware, require("./routes/accountRoute"));
+app.use("/api/account", require("./routes/accountRoute"));
+app.use("/api/admin", require("./routes/adminRoute"));
 
 app.use(customErrorMiddleware);
 app.use(notFoundMiddleware);
