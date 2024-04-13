@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
 const accountSchema = new mongoose.Schema({
@@ -27,6 +28,11 @@ const accountSchema = new mongoose.Schema({
     enum: ["user", "admin"],
     default: "user",
   },
+  verification: {
+    isVerified: { type: Boolean, default: false },
+    token: { type: String },
+    expiration: { type: Date },
+  },
 });
 
 accountSchema.pre("save", async function () {
@@ -52,6 +58,19 @@ accountSchema.methods.generateRefreshToken = async function () {
   return jwt.sign({ userId: this._id }, process.env.REFRESH_SECRET, {
     expiresIn: "1d",
   });
+};
+
+accountSchema.methods.generateVerificationToken = async function () {
+  const random = crypto.randomBytes(40).toString("hex");
+
+  this.verification.token = random;
+  this.verification.expiration = new Date(Date.now() + 10 * 60000);
+
+  return random;
+};
+
+accountSchema.methods.isVerificationTokenExpired = function () {
+  return this.verification.expiration < new Date();
 };
 
 module.exports = mongoose.model("Account", accountSchema);

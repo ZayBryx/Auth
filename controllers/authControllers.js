@@ -1,4 +1,3 @@
-const Account = require("../models/Account");
 const jwt = require("jsonwebtoken");
 const accountSchema = require("../validators/accountSchema");
 const { StatusCodes } = require("http-status-codes");
@@ -7,6 +6,9 @@ const {
   NotFoundError,
   UnathenticatedError,
 } = require("../Errors");
+const sendVerificationEmail = require("../utils/sendVerificationEmail");
+
+const Account = require("../models/Account");
 const Token = require("../models/Token");
 
 const login = async (req, res) => {
@@ -57,17 +59,21 @@ const register = async (req, res) => {
     throw new BadRequestError("Email already exists");
   }
 
-  const account = await Account.create({ name, email, password });
+  const account = new Account({ name, email, password });
 
-  const accessToken = await account.generateAccessToken();
-  const refreshToken = await account.generateRefreshToken();
+  const verificationToken = await account.generateVerificationToken();
 
-  res.cookie("jwt", refreshToken, {
-    httpOnly: true,
-    secure: "production",
-    maxAge: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+  await account.save();
+
+  res.status(StatusCodes.OK).json({
+    message: "Success! Please check your email to verify account",
   });
-  res.status(StatusCodes.OK).json({ token: accessToken });
+
+  await sendVerificationEmail({
+    to: account.email,
+    verificationToken,
+    userId: account._id,
+  });
 };
 
 const refresh = async (req, res) => {
