@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
+const helmet = require("helmet");
 const app = express();
 
 const port = process.env.PORT || 2024;
@@ -14,6 +15,7 @@ const db = process.env.DB_URI;
 const customErrorMiddleware = require("./middleware/error-handler");
 const notFoundMiddleware = require("./middleware/not-found");
 
+// setup a allowed origin
 app.use(
   cors({
     origin: true,
@@ -21,6 +23,9 @@ app.use(
   })
 );
 
+app.disable("x-powered-by");
+
+app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
 
