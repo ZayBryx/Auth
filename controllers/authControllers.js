@@ -103,8 +103,36 @@ const refresh = async (req, res) => {
   }
 };
 
+const activateEmail = async (req, res) => {
+  const { token, userId } = req.body;
+
+  const account = await Account.findById(userId);
+
+  if (!account) {
+    throw new NotFoundError("User not found");
+  }
+
+  if (account.verification.token !== token) {
+    throw new UnathenticatedError("Invalid verification token");
+  }
+
+  const isExpired = account.isVerificationTokenExpired();
+
+  if (isExpired) {
+    throw new UnathenticatedError("Expired verification token");
+  }
+
+  account.verification.isVerified = true;
+  account.verification.token = null;
+  account.verification.expiration = null;
+  await account.save();
+
+  res.status(StatusCodes.OK).json({ message: "Email activated successfully" });
+};
+
 module.exports = {
   login,
   register,
   refresh,
+  activateEmail,
 };
