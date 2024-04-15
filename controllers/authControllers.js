@@ -5,6 +5,7 @@ const {
   BadRequestError,
   NotFoundError,
   UnathenticatedError,
+  UnathoizedError,
 } = require("../Errors");
 const sendVerificationEmail = require("../utils/sendVerificationEmail");
 
@@ -22,6 +23,11 @@ const login = async (req, res) => {
 
   if (!account) {
     throw new NotFoundError(`${email} Not Found`);
+  }
+
+  const isVerified = account.verification.isValid;
+  if (!isVerified) {
+    throw new UnathoizedError("Account is not verified");
   }
 
   const isMatch = await account.checkPassword(password);
