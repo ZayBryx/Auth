@@ -25,7 +25,7 @@ const login = async (req, res) => {
     throw new NotFoundError(`${email} Not Found`);
   }
 
-  const isVerified = account.verification.isValid;
+  const isVerified = account.verification.isVerified;
   if (!isVerified) {
     throw new UnathoizedError("Account is not verified");
   }
