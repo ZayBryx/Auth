@@ -5,6 +5,8 @@ const {
   changePassword,
 } = require("../controllers/accountControler");
 const { authMiddleware, authorizePermissions } = require("../middleware/auth");
+const Validator = require("../middleware/Validator");
+const { password } = require("../validators");
 
 const router = express.Router();
 
@@ -14,6 +16,7 @@ router.put(
   "/change-password",
   authMiddleware,
   authorizePermissions("user"),
+  Validator(password),
   changePassword
 );
 

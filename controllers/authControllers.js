@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const accountSchema = require("../validators/accountSchema");
 const { StatusCodes } = require("http-status-codes");
 const {
   BadRequestError,
@@ -49,15 +48,7 @@ const login = async (req, res) => {
 };
 
 const register = async (req, res) => {
-  const { error, value } = accountSchema.validate(req.body, {
-    abortEarly: true,
-  });
-
-  if (error) {
-    throw new BadRequestError(error.message);
-  }
-
-  const { name, email, password } = value;
+  const { name, email, password } = req.body;
 
   const isExist = await Account.findOne({ email });
 
@@ -136,9 +127,19 @@ const activateEmail = async (req, res) => {
   res.status(StatusCodes.OK).json({ message: "Email activated successfully" });
 };
 
+const forgotPassword = async (req, res) => {
+  res.send("forgot Password Route");
+};
+
+const resetPassword = async (req, res) => {
+  res.send("reset Password Route");
+};
+
 module.exports = {
   login,
   register,
   refresh,
   activateEmail,
+  forgotPassword,
+  resetPassword,
 };
