@@ -18,7 +18,7 @@ const notFoundMiddleware = require("./middleware/not-found");
 // setup a allowed origin
 app.use(
   cors({
-    origin: true,
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -28,6 +28,14 @@ app.disable("x-powered-by");
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
+
+app.get("/api/test", (req, res) => {
+  const authorization = req.headers.authorization;
+  const cookie = req.cookies["jwt"];
+  console.log(authorization);
+  console.log(cookie);
+  res.status(200).json({ authorization, cookie });
+});
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
