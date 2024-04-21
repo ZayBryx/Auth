@@ -33,6 +33,10 @@ const accountSchema = new mongoose.Schema({
     token: { type: String },
     expiration: { type: Date },
   },
+  reset: {
+    otp: { type: String, default: null },
+    expiration: { type: Date },
+  },
 });
 
 accountSchema.pre("save", async function () {
@@ -64,13 +68,17 @@ accountSchema.methods.generateVerificationToken = async function () {
   const random = crypto.randomBytes(40).toString("hex");
 
   this.verification.token = random;
-  this.verification.expiration = new Date(Date.now() + 10 * 60000);
+  this.verification.expiration = new Date(Date.now() + 10 * 60000); // 10 minutes
 
   return random;
 };
 
 accountSchema.methods.isVerificationTokenExpired = function () {
   return this.verification.expiration < new Date();
+};
+
+accountSchema.methods.isOTPExpired = function () {
+  return this.reset.expiration < new Date();
 };
 
 module.exports = mongoose.model("Account", accountSchema);

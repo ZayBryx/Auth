@@ -7,6 +7,8 @@ const {
   UnathoizedError,
 } = require("../Errors");
 const sendVerificationEmail = require("../utils/sendVerificationEmail");
+const sendResetEmail = require("../utils/sendResetEmail");
+const generateOTP = require("../utils/generateOTP");
 
 const Account = require("../models/Account");
 const Token = require("../models/Token");
@@ -62,14 +64,14 @@ const register = async (req, res) => {
 
   await account.save();
 
-  res.status(StatusCodes.OK).json({
-    message: "Success! Please check your email to verify account",
-  });
-
   await sendVerificationEmail({
     to: account.email,
     verificationToken,
     userId: account._id,
+  });
+
+  res.status(StatusCodes.OK).json({
+    message: "Success! Please check your email to verify account",
   });
 };
 
@@ -128,11 +130,43 @@ const activateEmail = async (req, res) => {
 };
 
 const forgotPassword = async (req, res) => {
-  res.send("forgot Password Route");
+  const { email } = req.body;
+
+  const account = await Account.findOne({ email });
+  if (!account) throw new NotFoundError("Invalid Email");
+
+  const OTP = generateOTP().toString();
+  account.reset.otp = String(OTP);
+  account.reset.expiration = new Date(Date.now() + 10 * 30000); // 5mins
+
+  await account.save();
+
+  await sendResetEmail({ to: email, OTP });
+  res
+    .status(StatusCodes.OK)
+    .redirect(`${process.env.CLIENT_URL}/forgot-password/otp`);
 };
 
 const resetPassword = async (req, res) => {
-  res.send("reset Password Route");
+  const { otp, newPassword, confirmPassword } = req.body;
+
+  const account = await Account.findOne({ "reset.otp": otp });
+  if (!account) {
+    throw new BadRequestError("Invalid OTP");
+  }
+
+  const isExpired = await account.isOTPExpired();
+  if (isExpired) {
+    throw new BadRequestError("OTP is Expired");
+  }
+
+  account.password = newPassword;
+
+  (account.reset.otp = null), (account.reset.expiration = null);
+
+  await account.save();
+
+  res.status(StatusCodes.OK).json({ message: "Password reset successfully!" });
 };
 
 module.exports = {

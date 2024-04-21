@@ -9,6 +9,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.MAILER_AUTH_USER,
     pass: process.env.MAILER_AUTH_PASS,
   },
+  timeout: 60000,
 });
 
 module.exports = transporter;
