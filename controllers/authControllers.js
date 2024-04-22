@@ -6,9 +6,12 @@ const {
   UnathenticatedError,
   UnathoizedError,
 } = require("../Errors");
-const sendVerificationEmail = require("../utils/sendVerificationEmail");
-const sendResetEmail = require("../utils/sendResetEmail");
-const generateOTP = require("../utils/generateOTP");
+
+const {
+  generateOTP,
+  sendResetEmail,
+  sendVerificationEmail,
+} = require("../utils");
 
 const Account = require("../models/Account");
 const Token = require("../models/Token");
