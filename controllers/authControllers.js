@@ -47,7 +47,7 @@ const login = async (req, res) => {
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
     secure: "production",
-    maxAge: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    // maxAge: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
   });
   res.status(StatusCodes.OK).json({ token: accessToken });
 };

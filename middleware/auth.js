@@ -11,6 +11,8 @@ const authMiddleware = async (req, res, next) => {
   const accessToken = req.headers.authorization;
   const refreshToken = req.cookies["jwt"];
 
+  console.log({ accessToken, refreshToken });
+
   if (!refreshToken) throw new NotFoundError("Token not Found");
 
   const refresh = await Token.findOne({ refreshToken });
