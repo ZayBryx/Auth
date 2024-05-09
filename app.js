@@ -15,7 +15,6 @@ const db = process.env.DB_URI;
 const customErrorMiddleware = require("./middleware/error-handler");
 const notFoundMiddleware = require("./middleware/not-found");
 
-// setup a allowed origin
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -28,6 +27,7 @@ app.disable("x-powered-by");
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "dist")));
 
 app.get("/api/test", (req, res) => {
   const authorization = req.headers.authorization;
