@@ -32,13 +32,11 @@ app.use(express.static(path.join(__dirname, "dist")));
 app.get("/api/test", (req, res) => {
   const authorization = req.headers.authorization;
   const cookie = req.cookies["jwt"];
-  console.log(authorization);
-  console.log(cookie);
   res.status(200).json({ authorization, cookie });
 });
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 app.use("/api/auth", require("./routes/authRoutes"));

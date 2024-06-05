@@ -3,6 +3,7 @@ const {
   account,
   logout,
   changePassword,
+  updateData,
 } = require("../controllers/accountControler");
 const { authMiddleware, authorizePermissions } = require("../middleware/auth");
 const Validator = require("../middleware/Validator");
@@ -19,5 +20,6 @@ router.put(
   Validator(password),
   changePassword
 );
+router.patch("/update-data", authMiddleware, updateData);
 
 module.exports = router;

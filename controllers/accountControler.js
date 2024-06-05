@@ -40,8 +40,27 @@ const changePassword = async (req, res) => {
   res.status(StatusCodes.OK).json({ message: "Password updated successfully" });
 };
 
+const updateData = async (req, res) => {
+  const { name } = req.body;
+  const { userId } = req.user;
+
+  const account = await Account.findByIdAndUpdate(
+    userId,
+    { name: name },
+    { new: true }
+  );
+  if (!account) {
+    throw new NotFoundError("Not Found");
+  }
+
+  res
+    .status(StatusCodes.OK)
+    .json({ message: "Data updated successfully", name: account.name });
+};
+
 module.exports = {
   account,
   logout,
   changePassword,
+  updateData,
 };

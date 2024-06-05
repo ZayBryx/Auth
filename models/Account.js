@@ -54,7 +54,7 @@ accountSchema.methods.generateAccessToken = async function () {
   return jwt.sign(
     { userId: this._id, name: this.name, role: this.role },
     process.env.ACCESS_SECRET,
-    { expiresIn: "3min" }
+    { expiresIn: "5min" }
   );
 };
 
