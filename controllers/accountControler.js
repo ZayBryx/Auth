@@ -40,8 +40,22 @@ const changePassword = async (req, res) => {
   res.status(StatusCodes.OK).json({ message: "Password updated successfully" });
 };
 
+const updateUser = async (req, res) => {
+  const { name } = req.body;
+  const { userId } = req.user;
+
+  const account = await Account.findByIdAndUpdate(
+    userId,
+    { name },
+    { new: true }
+  );
+
+  res.status(StatusCodes.OK).json({ name: account.name });
+};
+
 module.exports = {
   account,
   logout,
   changePassword,
+  updateUser,
 };

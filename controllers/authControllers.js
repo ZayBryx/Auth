@@ -50,7 +50,12 @@ const login = async (req, res) => {
     sameSite: "none",
     maxAge: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
   });
-  res.status(StatusCodes.OK).json({ token: accessToken });
+  res
+    .status(StatusCodes.OK)
+    .json({
+      user: { name: account.name, userId: account._id, role: account.role },
+      token: accessToken,
+    });
 };
 
 const register = async (req, res) => {
